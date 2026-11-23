@@ -1,15 +1,21 @@
 const express = require('express');
 const cors = require('cors');
 
-const rolRoutes = require('./routes/rolRoutes');
+const rolRoutes =
+  require('./routes/rolRoutes');
+
+const authRoutes =
+  require('./routes/authRoutes');
+
+const paisRoutes =
+  require('./routes/paisRoutes');
+
+const universidadeRoutes =
+  require(
+    './routes/universidadeRoutes'
+  );
 
 const app = express();
-
-const authRoutes = require('./routes/authRoutes');
-
-// ============================================================
-// MIDDLEWARES
-// ============================================================
 
 app.use(cors());
 app.use(express.json());
@@ -20,7 +26,8 @@ app.use(express.json());
 
 app.get('/', (req, res) => {
   res.json({
-    mensagem: 'API InterChapecó funcionando.',
+    mensagem:
+      'API InterChapecó funcionando.',
   });
 });
 
@@ -28,7 +35,24 @@ app.get('/', (req, res) => {
 // ROTAS
 // ============================================================
 
-app.use('/roles', rolRoutes);
-app.use('/auth', authRoutes);
+app.use(
+  '/roles',
+  rolRoutes
+);
+
+app.use(
+  '/auth',
+  authRoutes
+);
+
+app.use(
+  '/paises',
+  paisRoutes
+);
+
+app.use(
+  '/universidades',
+  universidadeRoutes
+);
 
 module.exports = app;

@@ -40,10 +40,16 @@ const Usuario = sequelize.define(
       field: 'pais_origem_id',
     },
 
-    universidadeId: {
+    universidadeOrigemId: {
       type: DataTypes.UUID,
       allowNull: true,
-      field: 'universidade_id',
+      field: 'universidade_origem_id',
+    },
+
+    universidadeDestinoId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      field: 'universidade_destino_id',
     },
 
     fotoUrl: {
@@ -72,8 +78,11 @@ const Usuario = sequelize.define(
   },
   {
     tableName: 'usuarios',
+
     timestamps: true,
+
     createdAt: 'criado_em',
+
     updatedAt: 'atualizado_em',
   }
 );

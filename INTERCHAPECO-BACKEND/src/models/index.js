@@ -4,7 +4,7 @@ const Universidade = require('./Universidade');
 const Usuario = require('./Usuario');
 
 // ============================================================
-// PAIS - UNIVERSIDADE
+// PAÍS - UNIVERSIDADE
 // ============================================================
 
 Pais.hasMany(Universidade, {
@@ -32,12 +32,12 @@ Usuario.belongsTo(Rol, {
 });
 
 // ============================================================
-// PAIS - USUARIO
+// PAÍS DE ORIGEM - USUARIO
 // ============================================================
 
 Pais.hasMany(Usuario, {
   foreignKey: 'pais_origem_id',
-  as: 'usuarios',
+  as: 'usuariosOrigem',
 });
 
 Usuario.belongsTo(Pais, {
@@ -46,17 +46,31 @@ Usuario.belongsTo(Pais, {
 });
 
 // ============================================================
-// UNIVERSIDADE - USUARIO
+// UNIVERSIDADE DE ORIGEM - USUARIO
 // ============================================================
 
 Universidade.hasMany(Usuario, {
-  foreignKey: 'universidade_id',
-  as: 'usuarios',
+  foreignKey: 'universidade_origem_id',
+  as: 'usuariosOrigem',
 });
 
 Usuario.belongsTo(Universidade, {
-  foreignKey: 'universidade_id',
-  as: 'universidade',
+  foreignKey: 'universidade_origem_id',
+  as: 'universidadeOrigem',
+});
+
+// ============================================================
+// UNIVERSIDADE DE DESTINO - USUARIO
+// ============================================================
+
+Universidade.hasMany(Usuario, {
+  foreignKey: 'universidade_destino_id',
+  as: 'usuariosDestino',
+});
+
+Usuario.belongsTo(Universidade, {
+  foreignKey: 'universidade_destino_id',
+  as: 'universidadeDestino',
 });
 
 module.exports = {
