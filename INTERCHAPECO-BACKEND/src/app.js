@@ -5,6 +5,8 @@ const rolRoutes = require('./routes/rolRoutes');
 
 const app = express();
 
+const authRoutes = require('./routes/authRoutes');
+
 // ============================================================
 // MIDDLEWARES
 // ============================================================
@@ -27,5 +29,6 @@ app.get('/', (req, res) => {
 // ============================================================
 
 app.use('/roles', rolRoutes);
+app.use('/auth', authRoutes);
 
 module.exports = app;
