@@ -89,7 +89,59 @@ async function login(req, res) {
     });
   }
 }
+async function obterUsuarioAutenticado(
+  req,
+  res
+) {
+  try {
+    const usuario =
+      await Usuario.findByPk(
+        req.usuario.id,
+        {
+          include: [
+            {
+              model: Rol,
+              as: 'rol',
+              attributes: [
+                'id',
+                'nome',
+              ],
+            },
+          ],
+        }
+      );
 
+    if (!usuario) {
+      return res.status(404).json({
+        mensagem:
+          'Usuário não encontrado.',
+      });
+    }
+
+    return res.status(200).json({
+      usuario: {
+        id: usuario.id,
+        nome: usuario.nomeCompleto,
+        email: usuario.email,
+        fotoUrl: usuario.fotoUrl,
+        idioma: usuario.idioma,
+        tema: usuario.tema,
+        rol: usuario.rol,
+      },
+    });
+  } catch (erro) {
+    console.error(
+      'Erro ao buscar usuário autenticado:',
+      erro
+    );
+
+    return res.status(500).json({
+      mensagem:
+        'Erro ao buscar usuário.',
+    });
+  }
+}
 module.exports = {
   login,
+  obterUsuarioAutenticado,
 };
