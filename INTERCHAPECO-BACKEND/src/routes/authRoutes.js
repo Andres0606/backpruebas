@@ -4,6 +4,7 @@ const {
   login,
   cadastro,
   obterUsuarioAutenticado,
+  editarPerfil,
 } = require('../controllers/authController');
 
 const {
@@ -38,6 +39,16 @@ router.get(
   '/me',
   autenticar,
   obterUsuarioAutenticado
+);
+
+// ============================================================
+// ATUALIZAR PERFIL
+// ============================================================
+
+router.put(
+  '/me',
+  autenticar,
+  editarPerfil
 );
 
 module.exports = router;

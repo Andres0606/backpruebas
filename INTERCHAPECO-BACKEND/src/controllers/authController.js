@@ -2,6 +2,7 @@ const {
   fazerLogin,
   cadastrarUsuario,
   buscarUsuarioAutenticado,
+  atualizarPerfil,
 } = require('../services/authService');
 
 // ============================================================
@@ -106,8 +107,46 @@ async function obterUsuarioAutenticado(
   }
 }
 
+// ============================================================
+// ATUALIZAR PERFIL
+// ============================================================
+
+async function editarPerfil(
+  req,
+  res
+) {
+  try {
+    const usuario =
+      await atualizarPerfil(
+        req.usuario.id,
+        req.body
+      );
+
+    return res.status(200).json({
+      usuario,
+    });
+  } catch (erro) {
+    console.error(
+      'Erro ao atualizar perfil:',
+      erro
+    );
+
+    return res
+      .status(
+        erro.status || 500
+      )
+      .json({
+        mensagem:
+          erro.status
+            ? erro.message
+            : 'Erro ao atualizar perfil.',
+      });
+  }
+}
+
 module.exports = {
   login,
   cadastro,
   obterUsuarioAutenticado,
+  editarPerfil,
 };

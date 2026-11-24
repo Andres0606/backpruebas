@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { Op } = require('sequelize');
 
 const {
   Usuario,
@@ -111,7 +112,6 @@ async function fazerLogin({
     );
 
     erro.status = 400;
-
     throw erro;
   }
 
@@ -122,7 +122,8 @@ async function fazerLogin({
           email.trim().toLowerCase(),
       },
 
-      include: incluirDadosUsuario,
+      include:
+        incluirDadosUsuario,
     });
 
   if (!usuario) {
@@ -131,7 +132,6 @@ async function fazerLogin({
     );
 
     erro.status = 401;
-
     throw erro;
   }
 
@@ -141,7 +141,6 @@ async function fazerLogin({
     );
 
     erro.status = 403;
-
     throw erro;
   }
 
@@ -157,7 +156,6 @@ async function fazerLogin({
     );
 
     erro.status = 401;
-
     throw erro;
   }
 
@@ -183,10 +181,6 @@ async function cadastrarUsuario({
   email,
   senha,
 }) {
-  // ----------------------------------------------------------
-  // VALIDAÇÕES
-  // ----------------------------------------------------------
-
   if (
     !nome ||
     !paisOrigemId ||
@@ -215,10 +209,6 @@ async function cadastrarUsuario({
   const emailNormalizado =
     email.trim().toLowerCase();
 
-  // ----------------------------------------------------------
-  // VERIFICAR E-MAIL
-  // ----------------------------------------------------------
-
   const usuarioExistente =
     await Usuario.findOne({
       where: {
@@ -234,10 +224,6 @@ async function cadastrarUsuario({
     erro.status = 409;
     throw erro;
   }
-
-  // ----------------------------------------------------------
-  // ROL ESTUDANTE
-  // ----------------------------------------------------------
 
   const rolEstudante =
     await Rol.findOne({
@@ -255,8 +241,242 @@ async function cadastrarUsuario({
     throw erro;
   }
 
+  const paisOrigem =
+    await Pais.findByPk(
+      paisOrigemId
+    );
+
+  if (!paisOrigem) {
+    const erro = new Error(
+      'País de origem inválido.'
+    );
+
+    erro.status = 400;
+    throw erro;
+  }
+
+  const universidadeOrigem =
+    await Universidade.findByPk(
+      universidadeOrigemId
+    );
+
+  if (!universidadeOrigem) {
+    const erro = new Error(
+      'Universidade de origem inválida.'
+    );
+
+    erro.status = 400;
+    throw erro;
+  }
+
+  if (
+    universidadeOrigem.paisId !==
+    paisOrigem.id
+  ) {
+    const erro = new Error(
+      'A universidade de origem não pertence ao país selecionado.'
+    );
+
+    erro.status = 400;
+    throw erro;
+  }
+
+  const universidadeDestino =
+    await Universidade.findByPk(
+      universidadeDestinoId
+    );
+
+  if (!universidadeDestino) {
+    const erro = new Error(
+      'Universidade de destino inválida.'
+    );
+
+    erro.status = 400;
+    throw erro;
+  }
+
+  if (
+    universidadeDestino.cidade
+      ?.trim()
+      .toLowerCase() !==
+    'chapecó'
+  ) {
+    const erro = new Error(
+      'A universidade de destino deve estar localizada em Chapecó.'
+    );
+
+    erro.status = 400;
+    throw erro;
+  }
+
+  const senhaHash =
+    await bcrypt.hash(
+      senha,
+      10
+    );
+
+  const novoUsuario =
+    await Usuario.create({
+      rolId:
+        rolEstudante.id,
+
+      nomeCompleto:
+        nome.trim(),
+
+      email:
+        emailNormalizado,
+
+      senhaHash,
+
+      paisOrigemId:
+        paisOrigem.id,
+
+      universidadeOrigemId:
+        universidadeOrigem.id,
+
+      universidadeDestinoId:
+        universidadeDestino.id,
+
+      fotoUrl:
+        null,
+
+      idioma:
+        'pt-BR',
+
+      tema:
+        'claro',
+
+      ativo:
+        true,
+    });
+
+  const usuarioCompleto =
+    await Usuario.findByPk(
+      novoUsuario.id,
+      {
+        include:
+          incluirDadosUsuario,
+      }
+    );
+
+  const token =
+    gerarToken(
+      usuarioCompleto
+    );
+
+  return {
+    token,
+    usuario:
+      formatarUsuario(
+        usuarioCompleto
+      ),
+  };
+}
+
+// ============================================================
+// BUSCAR USUÁRIO AUTENTICADO
+// ============================================================
+
+async function buscarUsuarioAutenticado(
+  usuarioId
+) {
+  const usuario =
+    await Usuario.findByPk(
+      usuarioId,
+      {
+        include:
+          incluirDadosUsuario,
+      }
+    );
+
+  if (!usuario) {
+    const erro = new Error(
+      'Usuário não encontrado.'
+    );
+
+    erro.status = 404;
+    throw erro;
+  }
+
+  return formatarUsuario(
+    usuario
+  );
+}
+
+// ============================================================
+// ATUALIZAR PERFIL
+// ============================================================
+
+async function atualizarPerfil(
+  usuarioId,
+  {
+    nome,
+    paisOrigemId,
+    universidadeOrigemId,
+    universidadeDestinoId,
+    email,
+  }
+) {
+  if (
+    !nome ||
+    !paisOrigemId ||
+    !universidadeOrigemId ||
+    !universidadeDestinoId ||
+    !email
+  ) {
+    const erro = new Error(
+      'Todos os campos são obrigatórios.'
+    );
+
+    erro.status = 400;
+    throw erro;
+  }
+
+  const usuario =
+    await Usuario.findByPk(
+      usuarioId
+    );
+
+  if (!usuario) {
+    const erro = new Error(
+      'Usuário não encontrado.'
+    );
+
+    erro.status = 404;
+    throw erro;
+  }
+
+  const emailNormalizado =
+    email.trim().toLowerCase();
+
   // ----------------------------------------------------------
-  // VALIDAR PAÍS DE ORIGEM
+  // VERIFICAR E-MAIL DE OUTRO USUÁRIO
+  // ----------------------------------------------------------
+
+  const usuarioComEmail =
+    await Usuario.findOne({
+      where: {
+        email:
+          emailNormalizado,
+
+        id: {
+          [Op.ne]:
+            usuarioId,
+        },
+      },
+    });
+
+  if (usuarioComEmail) {
+    const erro = new Error(
+      'Já existe uma conta com este e-mail.'
+    );
+
+    erro.status = 409;
+    throw erro;
+  }
+
+  // ----------------------------------------------------------
+  // VALIDAR PAÍS
   // ----------------------------------------------------------
 
   const paisOrigem =
@@ -336,88 +556,27 @@ async function cadastrarUsuario({
   }
 
   // ----------------------------------------------------------
-  // HASH DA SENHA
+  // ATUALIZAR
   // ----------------------------------------------------------
 
-  const senhaHash =
-    await bcrypt.hash(
-      senha,
-      10
-    );
+  await usuario.update({
+    nomeCompleto:
+      nome.trim(),
 
-  // ----------------------------------------------------------
-  // CRIAR USUÁRIO
-  // ----------------------------------------------------------
+    email:
+      emailNormalizado,
 
-  const novoUsuario =
-    await Usuario.create({
-      rolId:
-        rolEstudante.id,
+    paisOrigemId:
+      paisOrigem.id,
 
-      nomeCompleto:
-        nome.trim(),
+    universidadeOrigemId:
+      universidadeOrigem.id,
 
-      email:
-        emailNormalizado,
+    universidadeDestinoId:
+      universidadeDestino.id,
+  });
 
-      senhaHash,
-
-      paisOrigemId:
-        paisOrigem.id,
-
-      universidadeOrigemId:
-        universidadeOrigem.id,
-
-      universidadeDestinoId:
-        universidadeDestino.id,
-
-      fotoUrl:
-        null,
-
-      idioma:
-        'pt-BR',
-
-      tema:
-        'claro',
-
-      ativo:
-        true,
-    });
-
-  // ----------------------------------------------------------
-  // BUSCAR USUÁRIO COMPLETO
-  // ----------------------------------------------------------
-
-  const usuarioCompleto =
-    await Usuario.findByPk(
-      novoUsuario.id,
-      {
-        include:
-          incluirDadosUsuario,
-      }
-    );
-
-  const token =
-    gerarToken(
-      usuarioCompleto
-    );
-
-  return {
-    token,
-    usuario:
-      formatarUsuario(
-        usuarioCompleto
-      ),
-  };
-}
-// ============================================================
-// USUÁRIO AUTENTICADO
-// ============================================================
-
-async function buscarUsuarioAutenticado(
-  usuarioId
-) {
-  const usuario =
+  const usuarioAtualizado =
     await Usuario.findByPk(
       usuarioId,
       {
@@ -426,18 +585,8 @@ async function buscarUsuarioAutenticado(
       }
     );
 
-  if (!usuario) {
-    const erro = new Error(
-      'Usuário não encontrado.'
-    );
-
-    erro.status = 404;
-
-    throw erro;
-  }
-
   return formatarUsuario(
-    usuario
+    usuarioAtualizado
   );
 }
 
@@ -445,4 +594,5 @@ module.exports = {
   fazerLogin,
   cadastrarUsuario,
   buscarUsuarioAutenticado,
+  atualizarPerfil,
 };
