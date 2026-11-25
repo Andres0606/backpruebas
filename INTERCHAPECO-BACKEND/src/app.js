@@ -7,6 +7,9 @@ const rolRoutes =
 const authRoutes =
   require('./routes/authRoutes');
 
+const adminRoutes =
+  require('./routes/adminRoutes');
+
 const paisRoutes =
   require('./routes/paisRoutes');
 
@@ -61,6 +64,11 @@ app.use(
 app.use(
   '/configuracoes',
   configuracaoRoutes
+);
+
+app.use(
+  '/admin',
+  adminRoutes
 );
 
 module.exports = app;

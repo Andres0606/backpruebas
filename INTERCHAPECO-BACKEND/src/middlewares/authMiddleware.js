@@ -1,7 +1,11 @@
 // MIDDLEWARE — Autenticação do usuário
 
 const jwt = require('jsonwebtoken');
-const Usuario = require('../models/Usuario');
+
+const {
+  Usuario,
+  Rol,
+} = require('../models');
 
 async function autenticar(req, res, next) {
   try {
@@ -32,7 +36,7 @@ async function autenticar(req, res, next) {
     );
 
     // ========================================================
-    // VERIFICAR USUÁRIO
+    // VERIFICAR USUÁRIO E ROL ATUAL
     // ========================================================
 
     const usuario = await Usuario.findByPk(
@@ -42,6 +46,17 @@ async function autenticar(req, res, next) {
           'id',
           'ativo',
           'versaoToken',
+        ],
+
+        include: [
+          {
+            model: Rol,
+            as: 'rol',
+            attributes: [
+              'id',
+              'nome',
+            ],
+          },
         ],
       }
     );
@@ -71,7 +86,29 @@ async function autenticar(req, res, next) {
       });
     }
 
-    req.usuario = dados;
+    // ========================================================
+    // VERIFICAR ROL DO USUÁRIO
+    // ========================================================
+
+    if (
+      !usuario.rol ||
+      !['Administrador', 'Estudante'].includes(
+        usuario.rol.nome
+      )
+    ) {
+      return res.status(403).json({
+        mensagem: 'Perfil de acesso inválido.',
+      });
+    }
+
+    // Utiliza os dados atuais do banco de dados.
+
+    req.usuario = {
+      id: usuario.id,
+      rol: usuario.rol.nome,
+      rolId: usuario.rol.id,
+      versaoToken: usuario.versaoToken,
+    };
 
     next();
 
@@ -88,7 +125,9 @@ async function autenticar(req, res, next) {
       });
     }
 
-    console.error('Erro ao verificar autenticação.');
+    console.error(
+      'Erro ao verificar autenticação.'
+    );
 
     return res.status(500).json({
       mensagem:
