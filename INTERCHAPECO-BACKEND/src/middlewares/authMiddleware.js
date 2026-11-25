@@ -1,6 +1,9 @@
-const jwt = require('jsonwebtoken');
+// MIDDLEWARE — Autenticação do usuário
 
-function autenticar(req, res, next) {
+const jwt = require('jsonwebtoken');
+const Usuario = require('../models/Usuario');
+
+async function autenticar(req, res, next) {
   try {
     const cabecalho = req.headers.authorization;
 
@@ -28,13 +31,68 @@ function autenticar(req, res, next) {
       process.env.JWT_SECRET
     );
 
+    // ========================================================
+    // VERIFICAR USUÁRIO
+    // ========================================================
+
+    const usuario = await Usuario.findByPk(
+      dados.id,
+      {
+        attributes: [
+          'id',
+          'ativo',
+          'versaoToken',
+        ],
+      }
+    );
+
+    if (!usuario) {
+      return res.status(401).json({
+        mensagem: 'Usuário não encontrado.',
+      });
+    }
+
+    if (!usuario.ativo) {
+      return res.status(403).json({
+        mensagem: 'Usuário inativo.',
+      });
+    }
+
+    // ========================================================
+    // VERIFICAR VERSÃO DO TOKEN
+    // ========================================================
+
+    if (
+      dados.versaoToken !== usuario.versaoToken
+    ) {
+      return res.status(401).json({
+        mensagem:
+          'Sessão expirada. Faça login novamente.',
+      });
+    }
+
     req.usuario = dados;
 
     next();
+
   } catch (erro) {
-    return res.status(401).json({
+
+    if (
+      erro.name === 'JsonWebTokenError' ||
+      erro.name === 'TokenExpiredError' ||
+      erro.name === 'NotBeforeError'
+    ) {
+      return res.status(401).json({
+        mensagem:
+          'Token inválido ou expirado.',
+      });
+    }
+
+    console.error('Erro ao verificar autenticação.');
+
+    return res.status(500).json({
       mensagem:
-        'Token inválido ou expirado.',
+        'Não foi possível verificar a autenticação.',
     });
   }
 }

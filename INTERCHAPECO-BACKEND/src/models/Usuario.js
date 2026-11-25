@@ -75,6 +75,13 @@ const Usuario = sequelize.define(
       allowNull: false,
       defaultValue: true,
     },
+
+    versaoToken: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      field: 'versao_token',
+    },
   },
   {
     tableName: 'usuarios',

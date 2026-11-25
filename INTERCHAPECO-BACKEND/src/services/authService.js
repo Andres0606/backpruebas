@@ -45,6 +45,7 @@ function gerarToken(usuario) {
     {
       id: usuario.id,
       rol: usuario.rol?.nome || 'Estudante',
+      versaoToken: usuario.versaoToken,
     },
     process.env.JWT_SECRET,
     {

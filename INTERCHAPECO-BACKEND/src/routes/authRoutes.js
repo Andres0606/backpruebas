@@ -1,3 +1,5 @@
+// ROUTES — Autenticação
+
 const express = require('express');
 
 const {
@@ -13,12 +15,22 @@ const {
 } = require('../controllers/fotoController');
 
 const {
+  solicitar,
+  redefinir,
+} = require('../controllers/recuperacaoSenhaController');
+
+const {
   autenticar,
 } = require('../middlewares/authMiddleware');
 
 const {
   uploadFoto,
 } = require('../middlewares/uploadMiddleware');
+
+const {
+  limitarSolicitacoes,
+  limitarRedefinicoes,
+} = require('../middlewares/recuperacaoSenhaMiddleware');
 
 const router = express.Router();
 
@@ -33,6 +45,26 @@ router.post('/login', login);
 // ============================================================
 
 router.post('/cadastro', cadastro);
+
+// ============================================================
+// SOLICITAR RECUPERAÇÃO DE SENHA
+// ============================================================
+
+router.post(
+  '/recuperar-senha',
+  limitarSolicitacoes,
+  solicitar
+);
+
+// ============================================================
+// REDEFINIR SENHA
+// ============================================================
+
+router.post(
+  '/redefinir-senha',
+  limitarRedefinicoes,
+  redefinir
+);
 
 // ============================================================
 // USUÁRIO AUTENTICADO
