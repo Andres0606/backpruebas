@@ -21,6 +21,12 @@ const universidadeRoutes =
 const configuracaoRoutes =
   require('./routes/configuracaoRoutes');  
 
+const lugarRoutes =
+  require('./routes/lugarRoutes');
+
+const categoriaLugarRoutes =
+  require('./routes/categoriaLugarRoutes');
+
 const app = express();
 
 app.use(cors());
@@ -69,6 +75,16 @@ app.use(
 app.use(
   '/admin',
   adminRoutes
+);
+
+app.use(
+  '/lugares',
+  lugarRoutes
+);
+
+app.use(
+  '/categorias-lugar',
+  categoriaLugarRoutes
 );
 
 module.exports = app;

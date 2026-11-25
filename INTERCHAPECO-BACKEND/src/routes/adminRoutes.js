@@ -10,6 +10,12 @@ const {
   autorizar,
 } = require('../middlewares/autorizacaoMiddleware');
 
+const lugarController =
+  require('../controllers/lugarController');
+
+const categoriaLugarController =
+  require('../controllers/categoriaLugarController');
+
 const router = express.Router();
 
 // ============================================================
@@ -36,5 +42,63 @@ router.get('/acesso', (req, res) => {
     },
   });
 });
+
+// ============================================================
+// GERENCIAMENTO DE LUGARES
+// ============================================================
+
+router.get(
+  '/lugares',
+  lugarController.listarAdmin
+);
+
+router.get(
+  '/lugares/:id',
+  lugarController.obterAdmin
+);
+
+router.post(
+  '/lugares',
+  lugarController.criar
+);
+
+router.put(
+  '/lugares/:id',
+  lugarController.atualizar
+);
+
+router.delete(
+  '/lugares/:id',
+  lugarController.desativar
+);
+
+// ============================================================
+// GERENCIAMENTO DE CATEGORIAS DE LUGARES
+// ============================================================
+
+router.get(
+  '/categorias-lugar',
+  categoriaLugarController.listar
+);
+
+router.get(
+  '/categorias-lugar/:id',
+  categoriaLugarController.obter
+);
+
+router.post(
+  '/categorias-lugar',
+  categoriaLugarController.criar
+);
+
+router.put(
+  '/categorias-lugar/:id',
+  categoriaLugarController.atualizar
+);
+
+router.delete(
+  '/categorias-lugar/:id',
+  categoriaLugarController.excluir
+);
 
 module.exports = router;
