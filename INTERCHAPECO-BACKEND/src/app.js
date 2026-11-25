@@ -15,6 +15,9 @@ const universidadeRoutes =
     './routes/universidadeRoutes'
   );
 
+const configuracaoRoutes =
+  require('./routes/configuracaoRoutes');  
+
 const app = express();
 
 app.use(cors());
@@ -53,6 +56,11 @@ app.use(
 app.use(
   '/universidades',
   universidadeRoutes
+);
+
+app.use(
+  '/configuracoes',
+  configuracaoRoutes
 );
 
 module.exports = app;

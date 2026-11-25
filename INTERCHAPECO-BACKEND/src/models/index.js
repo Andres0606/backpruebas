@@ -2,6 +2,7 @@ const Rol = require('./Rol');
 const Pais = require('./Pais');
 const Universidade = require('./Universidade');
 const Usuario = require('./Usuario');
+const ConfiguracaoUsuario = require('./ConfiguracaoUsuario');
 
 // ============================================================
 // PAÍS - UNIVERSIDADE
@@ -73,9 +74,25 @@ Usuario.belongsTo(Universidade, {
   as: 'universidadeDestino',
 });
 
+// ============================================================
+// USUÁRIO - CONFIGURAÇÕES
+// ============================================================
+
+Usuario.hasOne(ConfiguracaoUsuario, {
+  foreignKey: 'usuarioId',
+  as: 'configuracoes',
+  onDelete: 'CASCADE',
+});
+
+ConfiguracaoUsuario.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'usuario',
+});
+
 module.exports = {
   Rol,
   Pais,
   Universidade,
   Usuario,
+  ConfiguracaoUsuario,
 };
