@@ -3,6 +3,9 @@ const Pais = require('./Pais');
 const Universidade = require('./Universidade');
 const Usuario = require('./Usuario');
 const ConfiguracaoUsuario = require('./ConfiguracaoUsuario');
+const CategoriaLugar = require('./CategoriaLugar');
+const Lugar = require('./Lugar');
+const FavoritoLugar = require('./FavoritoLugar');
 
 // ============================================================
 // PAÍS - UNIVERSIDADE
@@ -89,10 +92,58 @@ ConfiguracaoUsuario.belongsTo(Usuario, {
   as: 'usuario',
 });
 
+// ============================================================
+// CATEGORIA - LUGAR
+// ============================================================
+
+CategoriaLugar.hasMany(Lugar, {
+  foreignKey: 'categoriaId',
+  as: 'lugares',
+  onDelete: 'SET NULL',
+});
+
+Lugar.belongsTo(CategoriaLugar, {
+  foreignKey: 'categoriaId',
+  as: 'categoria',
+});
+
+// ============================================================
+// USUÁRIO - FAVORITOS DE LUGARES
+// ============================================================
+
+Usuario.hasMany(FavoritoLugar, {
+  foreignKey: 'usuarioId',
+  as: 'favoritosLugares',
+  onDelete: 'CASCADE',
+});
+
+FavoritoLugar.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'usuario',
+});
+
+// ============================================================
+// LUGAR - FAVORITOS
+// ============================================================
+
+Lugar.hasMany(FavoritoLugar, {
+  foreignKey: 'lugarId',
+  as: 'favoritos',
+  onDelete: 'CASCADE',
+});
+
+FavoritoLugar.belongsTo(Lugar, {
+  foreignKey: 'lugarId',
+  as: 'lugar',
+});
+
 module.exports = {
   Rol,
   Pais,
   Universidade,
   Usuario,
   ConfiguracaoUsuario,
+  CategoriaLugar,
+  Lugar,
+  FavoritoLugar,
 };
