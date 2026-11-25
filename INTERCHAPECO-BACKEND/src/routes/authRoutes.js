@@ -8,8 +8,17 @@ const {
 } = require('../controllers/authController');
 
 const {
+  atualizarFotoPerfil,
+  removerFotoPerfil,
+} = require('../controllers/fotoController');
+
+const {
   autenticar,
 } = require('../middlewares/authMiddleware');
+
+const {
+  uploadFoto,
+} = require('../middlewares/uploadMiddleware');
 
 const router = express.Router();
 
@@ -17,19 +26,13 @@ const router = express.Router();
 // LOGIN
 // ============================================================
 
-router.post(
-  '/login',
-  login
-);
+router.post('/login', login);
 
 // ============================================================
 // CADASTRO
 // ============================================================
 
-router.post(
-  '/cadastro',
-  cadastro
-);
+router.post('/cadastro', cadastro);
 
 // ============================================================
 // USUÁRIO AUTENTICADO
@@ -49,6 +52,27 @@ router.put(
   '/me',
   autenticar,
   editarPerfil
+);
+
+// ============================================================
+// ATUALIZAR FOTO
+// ============================================================
+
+router.put(
+  '/me/foto',
+  autenticar,
+  uploadFoto,
+  atualizarFotoPerfil
+);
+
+// ============================================================
+// REMOVER FOTO
+// ============================================================
+
+router.delete(
+  '/me/foto',
+  autenticar,
+  removerFotoPerfil
 );
 
 module.exports = router;
