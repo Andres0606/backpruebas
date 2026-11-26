@@ -6,7 +6,10 @@ const ConfiguracaoUsuario = require('./ConfiguracaoUsuario');
 const CategoriaLugar = require('./CategoriaLugar');
 const Lugar = require('./Lugar');
 const FavoritoLugar = require('./FavoritoLugar');
-
+const CategoriaAtividade = require('./CategoriaAtividade');
+const Atividade = require('./Atividade');
+const InteresseAtividade = require('./InteresseAtividade');
+const FavoritoAtividade = require('./FavoritoAtividade');
 // ============================================================
 // PAÍS - UNIVERSIDADE
 // ============================================================
@@ -137,6 +140,92 @@ FavoritoLugar.belongsTo(Lugar, {
   as: 'lugar',
 });
 
+
+// ============================================================
+// USUÁRIO - ATIVIDADES CRIADAS
+// ============================================================
+
+Usuario.hasMany(Atividade, {
+  foreignKey: 'criadorId',
+  as: 'atividadesCriadas',
+});
+
+Atividade.belongsTo(Usuario, {
+  foreignKey: 'criadorId',
+  as: 'criador',
+});
+
+// ============================================================
+// CATEGORIA - ATIVIDADE
+// ============================================================
+
+CategoriaAtividade.hasMany(Atividade, {
+  foreignKey: 'categoriaId',
+  as: 'atividades',
+});
+
+Atividade.belongsTo(CategoriaAtividade, {
+  foreignKey: 'categoriaId',
+  as: 'categoria',
+});
+
+// ============================================================
+// USUÁRIO - INTERESSES EM ATIVIDADES
+// ============================================================
+
+Usuario.hasMany(InteresseAtividade, {
+  foreignKey: 'usuarioId',
+  as: 'interessesAtividades',
+});
+
+InteresseAtividade.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'usuario',
+});
+
+// ============================================================
+// ATIVIDADE - INTERESSES
+// ============================================================
+
+Atividade.hasMany(InteresseAtividade, {
+  foreignKey: 'atividadeId',
+  as: 'interesses',
+});
+
+InteresseAtividade.belongsTo(Atividade, {
+  foreignKey: 'atividadeId',
+  as: 'atividade',
+});
+
+// ============================================================
+// USUÁRIO - FAVORITOS DE ATIVIDADES
+// ============================================================
+
+Usuario.hasMany(FavoritoAtividade, {
+  foreignKey: 'usuarioId',
+  as: 'favoritosAtividades',
+});
+
+FavoritoAtividade.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'usuario',
+});
+
+// ============================================================
+// ATIVIDADE - FAVORITOS
+// ============================================================
+
+Atividade.hasMany(FavoritoAtividade, {
+  foreignKey: 'atividadeId',
+  as: 'favoritos',
+});
+
+FavoritoAtividade.belongsTo(Atividade, {
+  foreignKey: 'atividadeId',
+  as: 'atividade',
+});
+
+
 module.exports = {
   Rol,
   Pais,
@@ -146,4 +235,8 @@ module.exports = {
   CategoriaLugar,
   Lugar,
   FavoritoLugar,
+  CategoriaAtividade,
+  Atividade,
+  InteresseAtividade,
+  FavoritoAtividade,
 };
