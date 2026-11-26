@@ -147,7 +147,10 @@ async function buscarLugar(
   return lugar;
 }
 
-async function obterLugar(id, incluirInativos = false) {
+async function obterLugar(
+  id,
+  incluirInativos = false
+) {
   const lugar = await buscarLugar(
     id,
     incluirInativos
@@ -172,6 +175,19 @@ async function validarDados(
     throw criarErro('Dados inválidos.');
   }
 
+  // A imagem deve ser gerenciada pela rota de upload.
+
+  if (
+    Object.prototype.hasOwnProperty.call(
+      dados,
+      'imagemUrl'
+    )
+  ) {
+    throw criarErro(
+      'Utilize a rota de fotografias para alterar a imagem.'
+    );
+  }
+
   const resultado = {};
 
   const camposTexto = {
@@ -183,7 +199,6 @@ async function validarDados(
     telefone: 30,
     horario: 2000,
     siteUrl: 2048,
-    imagemUrl: 2048,
   };
 
   const obrigatorios = [
@@ -227,15 +242,19 @@ async function validarDados(
       );
     }
 
+    // Validar URL do site
+
     if (
       valor &&
-      ['siteUrl', 'imagemUrl'].includes(campo)
+      campo === 'siteUrl'
     ) {
       try {
         const url = new URL(valor);
 
         if (
-          !['http:', 'https:'].includes(url.protocol)
+          !['http:', 'https:'].includes(
+            url.protocol
+          )
         ) {
           throw new Error();
         }
@@ -307,7 +326,9 @@ async function validarDados(
       ) ||
       String(dados[campo]).trim() === ''
     ) {
-      throw criarErro(`${campo} inválida.`);
+      throw criarErro(
+        `${campo} inválida.`
+      );
     }
 
     const valor = Number(dados[campo]);
@@ -317,7 +338,9 @@ async function validarDados(
       valor < -limite ||
       valor > limite
     ) {
-      throw criarErro(`${campo} inválida.`);
+      throw criarErro(
+        `${campo} inválida.`
+      );
     }
 
     resultado[campo] = valor;
@@ -342,7 +365,10 @@ async function validarDados(
 // VALIDAR PAR DE COORDENADAS
 // ============================================================
 
-function validarCoordenadas(latitude, longitude) {
+function validarCoordenadas(
+  latitude,
+  longitude
+) {
   const temLatitude = latitude != null;
   const temLongitude = longitude != null;
 

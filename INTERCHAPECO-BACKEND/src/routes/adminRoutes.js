@@ -16,6 +16,15 @@ const lugarController =
 const categoriaLugarController =
   require('../controllers/categoriaLugarController');
 
+const {
+  atualizarFotoLugar,
+  removerFotoLugar,
+} = require('../controllers/fotoLugarController');
+
+const {
+  uploadFoto,
+} = require('../middlewares/uploadMiddleware');
+
 const router = express.Router();
 
 // ============================================================
@@ -99,6 +108,21 @@ router.put(
 router.delete(
   '/categorias-lugar/:id',
   categoriaLugarController.excluir
+);
+
+// ============================================================
+// FOTOGRAFIAS DE LUGARES
+// ============================================================
+
+router.put(
+  '/lugares/:id/foto',
+  uploadFoto,
+  atualizarFotoLugar
+);
+
+router.delete(
+  '/lugares/:id/foto',
+  removerFotoLugar
 );
 
 module.exports = router;

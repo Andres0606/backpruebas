@@ -210,4 +210,5 @@ async function excluirFoto(usuarioId) {
 module.exports = {
   enviarFoto,
   excluirFoto,
+  validarImagem,
 };
