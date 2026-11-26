@@ -113,33 +113,30 @@ async function formatarAtividade(
 // LISTAR ATIVIDADES
 // ============================================================
 
+
 async function listarAtividades(
   usuarioId,
-  {
-    ordenacao = 'recentes',
-    categoriaId,
-  } = {}
+  { ordenacao = 'recentes', categoriaId } = {}
 ) {
-  if (
-    !['recentes', 'populares'].includes(
-      ordenacao
-    )
-  ) {
+  if (!['recentes', 'populares', 'minhas'].includes(ordenacao)) {
     throw criarErro('Ordenação inválida.');
   }
 
-  const agora = agoraChapeco();
+  const where = { ativo: true };
 
-  const where = {
-    ativo: true,
-    [Op.or]: [
+  if (ordenacao === 'minhas') {
+    where.criadorId = usuarioId;
+  } else {
+    const agora = agoraChapeco();
+
+    where[Op.or] = [
       { dataAtividade: { [Op.gt]: agora.data } },
       {
         dataAtividade: agora.data,
         horaInicio: { [Op.gt]: agora.hora },
       },
-    ],
-  };
+    ];
+  }
 
   if (categoriaId !== undefined) {
     if (!uuidValido(categoriaId)) {
@@ -149,36 +146,32 @@ async function listarAtividades(
     where.categoriaId = categoriaId;
   }
 
-  const atividades =
-    await Atividade.findAll({
-      where,
-
-      include: incluirRelacionamentos,
-
-      order: [
-        ['dataAtividade', 'ASC'],
-        ['horaInicio', 'ASC'],
-      ],
-    });
+  const atividades = await Atividade.findAll({
+    where,
+    include: incluirRelacionamentos,
+    order: [
+      ['dataAtividade', 'ASC'],
+      ['horaInicio', 'ASC'],
+    ],
+  });
 
   const resultado = await Promise.all(
     atividades.map((atividade) =>
-      formatarAtividade(
-        atividade,
-        usuarioId
-      )
+      formatarAtividade(atividade, usuarioId)
     )
   );
 
   if (ordenacao === 'populares') {
-    resultado.sort(
-      (a, b) =>
-        b.interessados - a.interessados
-    );
+    resultado.sort((a, b) => b.interessados - a.interessados);
+  }
+
+  if (ordenacao === 'minhas') {
+    resultado.sort((a, b) => Number(a.vencida) - Number(b.vencida));
   }
 
   return resultado;
 }
+
 
 // ============================================================
 // BUSCAR ATIVIDADE
