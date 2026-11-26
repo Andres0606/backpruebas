@@ -19,7 +19,7 @@ const universidadeRoutes =
   );
 
 const configuracaoRoutes =
-  require('./routes/configuracaoRoutes');  
+  require('./routes/configuracaoRoutes');
 
 const lugarRoutes =
   require('./routes/lugarRoutes');
@@ -38,6 +38,12 @@ const atividadeRoutes =
 
 const favoritoAtividadeRoutes =
   require('./routes/favoritoAtividadeRoutes');
+
+const categoriaConselhoRoutes =
+  require('./routes/categoriaConselhoRoutes');
+
+const conselhoRoutes =
+  require('./routes/conselhoRoutes');
 
 const app = express();
 
@@ -118,5 +124,12 @@ app.use(
   '/favoritos/atividades',
   favoritoAtividadeRoutes
 );
+
+app.use(
+  '/categorias-conselho',
+  categoriaConselhoRoutes
+);
+
+app.use('/conselhos', conselhoRoutes);
 
 module.exports = app;
