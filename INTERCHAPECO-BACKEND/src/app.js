@@ -27,6 +27,9 @@ const lugarRoutes =
 const categoriaLugarRoutes =
   require('./routes/categoriaLugarRoutes');
 
+const favoritoLugarRoutes =
+  require('./routes/favoritoLugarRoutes');
+
 const app = express();
 
 app.use(cors());
@@ -85,6 +88,11 @@ app.use(
 app.use(
   '/categorias-lugar',
   categoriaLugarRoutes
+);
+
+app.use(
+  '/favoritos/lugares',
+  favoritoLugarRoutes
 );
 
 module.exports = app;
