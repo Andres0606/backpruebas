@@ -36,6 +36,9 @@ const categoriaAtividadeRoutes =
 const atividadeRoutes =
   require('./routes/atividadeRoutes');
 
+const favoritoAtividadeRoutes =
+  require('./routes/favoritoAtividadeRoutes');
+
 const app = express();
 
 app.use(cors());
@@ -109,6 +112,11 @@ app.use(
 app.use(
   '/atividades',
   atividadeRoutes
+);
+
+app.use(
+  '/favoritos/atividades',
+  favoritoAtividadeRoutes
 );
 
 module.exports = app;

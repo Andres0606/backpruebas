@@ -12,6 +12,12 @@ const {
 } = require('../controllers/atividadeController');
 
 const {
+  verificar,
+  adicionar,
+  remover,
+} = require('../controllers/interesseAtividadeController');
+
+const {
   autenticar,
 } = require('../middlewares/authMiddleware');
 
@@ -59,5 +65,15 @@ router.put('/:id', atualizar);
 // ============================================================
 
 router.delete('/:id', excluir);
+
+// ============================================================
+// INTERESSES EM ATIVIDADES
+// ============================================================
+
+router.get('/:id/interesse', verificar);
+
+router.post('/:id/interesse', adicionar);
+
+router.delete('/:id/interesse', remover);
 
 module.exports = router;

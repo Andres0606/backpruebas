@@ -41,6 +41,8 @@ const incluirRelacionamentos = [
   },
 ];
 
+
+
 // ============================================================
 // FORMATAR ATIVIDADE
 // ============================================================
@@ -58,6 +60,24 @@ async function formatarAtividade(
       },
     });
 
+  const interesse = usuarioId
+    ? await InteresseAtividade.findOne({
+        where: {
+          atividadeId: dados.id,
+          usuarioId,
+        },
+      })
+    : null;
+
+  const favorito = usuarioId
+    ? await FavoritoAtividade.findOne({
+        where: {
+          atividadeId: dados.id,
+          usuarioId,
+        },
+      })
+    : null;
+
   return {
     ...dados,
 
@@ -73,10 +93,16 @@ async function formatarAtividade(
 
     interessados,
 
+    interessado: !!interesse,
+
+    guardado: !!favorito,
+
     minhaAtividade:
       dados.criadorId === usuarioId,
   };
 }
+
+
 
 // ============================================================
 // LISTAR ATIVIDADES
@@ -575,4 +601,5 @@ module.exports = {
   criarAtividade,
   atualizarAtividade,
   excluirAtividade,
+  formatarAtividade,
 };
