@@ -17,6 +17,13 @@ const {
   remover,
 } = require('../controllers/curtidaConselhoController');
 
+const {
+  listarComentarios,
+  criarComentario,
+  atualizarComentario,
+  excluirComentario,
+} = require('../controllers/comentarioConselhoController');
+
 const { autenticar } = require('../middlewares/authMiddleware');
 const { autorizar } = require('../middlewares/autorizacaoMiddleware');
 
@@ -35,5 +42,11 @@ router.delete('/:id', excluir);
 router.get('/:id/curtida', verificar);
 router.post('/:id/curtida', adicionar);
 router.delete('/:id/curtida', remover);
+
+// Comentários
+router.get('/:id/comentarios', listarComentarios);
+router.post('/:id/comentarios', criarComentario);
+router.put('/:id/comentarios/:comentarioId', atualizarComentario);
+router.delete('/:id/comentarios/:comentarioId', excluirComentario);
 
 module.exports = router;
