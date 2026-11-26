@@ -30,6 +30,12 @@ const categoriaLugarRoutes =
 const favoritoLugarRoutes =
   require('./routes/favoritoLugarRoutes');
 
+const categoriaAtividadeRoutes =
+  require('./routes/categoriaAtividadeRoutes');
+
+const atividadeRoutes =
+  require('./routes/atividadeRoutes');
+
 const app = express();
 
 app.use(cors());
@@ -93,6 +99,16 @@ app.use(
 app.use(
   '/favoritos/lugares',
   favoritoLugarRoutes
+);
+
+app.use(
+  '/categorias-atividade',
+  categoriaAtividadeRoutes
+);
+
+app.use(
+  '/atividades',
+  atividadeRoutes
 );
 
 module.exports = app;
