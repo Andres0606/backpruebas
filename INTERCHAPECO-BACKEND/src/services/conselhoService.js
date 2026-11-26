@@ -10,6 +10,8 @@ const {
   ComentarioConselho,
 } = require('../models');
 
+const { removerArquivo } = require('./fotoConselhoService');
+
 function criarErro(mensagem, status = 400) {
   const erro = new Error(mensagem);
   erro.status = status;
@@ -209,10 +211,14 @@ async function atualizarConselho(id, usuarioId, dados) {
 
 // Excluir conselho
 async function excluirConselho(id, usuarioId) {
-  return Conselho.sequelize.transaction(async (transaction) => {
+  let imagemAnterior;
+
+  const resultado = await Conselho.sequelize.transaction(async (transaction) => {
     const conselho = await buscarConselho(id, transaction);
 
     validarAutor(conselho, usuarioId);
+
+    imagemAnterior = conselho.imagemUrl;
 
     await CurtidaConselho.destroy({
       where: { conselhoId: id },
@@ -230,7 +236,16 @@ async function excluirConselho(id, usuarioId) {
       mensagem: 'Conselho excluído com sucesso.',
     };
   });
+
+  try {
+    await removerArquivo(imagemAnterior, id);
+  } catch (erro) {
+    console.error('Erro ao remover imagem do conselho:', erro.message);
+  }
+
+  return resultado;
 }
+
 
 module.exports = {
   listarConselhos,

@@ -24,8 +24,14 @@ const {
   excluirComentario,
 } = require('../controllers/comentarioConselhoController');
 
+const {
+  atualizarFotoConselho,
+  removerFotoConselho,
+} = require('../controllers/fotoConselhoController');
+
 const { autenticar } = require('../middlewares/authMiddleware');
 const { autorizar } = require('../middlewares/autorizacaoMiddleware');
+const { uploadFoto } = require('../middlewares/uploadMiddleware');
 
 const router = express.Router();
 
@@ -48,5 +54,9 @@ router.get('/:id/comentarios', listarComentarios);
 router.post('/:id/comentarios', criarComentario);
 router.put('/:id/comentarios/:comentarioId', atualizarComentario);
 router.delete('/:id/comentarios/:comentarioId', excluirComentario);
+
+// Fotografias
+router.put('/:id/foto', uploadFoto, atualizarFotoConselho);
+router.delete('/:id/foto', removerFotoConselho);
 
 module.exports = router;
