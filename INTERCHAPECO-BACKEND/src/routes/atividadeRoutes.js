@@ -25,6 +25,15 @@ const {
   autorizar,
 } = require('../middlewares/autorizacaoMiddleware');
 
+const {
+  atualizarFotoAtividade,
+  removerFotoAtividade,
+} = require('../controllers/fotoAtividadeController');
+
+const {
+  uploadFoto,
+} = require('../middlewares/uploadMiddleware');
+
 const router = express.Router();
 
 // ============================================================
@@ -75,5 +84,18 @@ router.get('/:id/interesse', verificar);
 router.post('/:id/interesse', adicionar);
 
 router.delete('/:id/interesse', remover);
+
+// Fotografias de atividades
+
+router.put(
+  '/:id/foto',
+  uploadFoto,
+  atualizarFotoAtividade
+);
+
+router.delete(
+  '/:id/foto',
+  removerFotoAtividade
+);
 
 module.exports = router;

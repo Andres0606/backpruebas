@@ -9,6 +9,7 @@ const {
   FavoritoAtividade,
 } = require('../models');
 
+const { removerArquivo } = require('./fotoAtividadeService');
 // ============================================================
 // FUNÇÕES AUXILIARES
 // ============================================================
@@ -526,73 +527,60 @@ async function atualizarAtividade(
 // ============================================================
 
 
-async function excluirAtividade(
-  id,
-  usuarioId
-) {
+
+async function excluirAtividade(id, usuarioId) {
   const sequelize = Atividade.sequelize;
+  let imagemAnterior = null;
 
-  return sequelize.transaction(
-    async (transaction) => {
+  const resultado = await sequelize.transaction(async (transaction) => {
+    if (!uuidValido(id)) {
+      throw criarErro('Identificador inválido.');
+    }
 
-      if (!uuidValido(id)) {
-        throw criarErro(
-          'Identificador inválido.'
-        );
-      }
+    const atividade = await Atividade.findOne({
+      where: { id },
+      transaction,
+      lock: transaction.LOCK.UPDATE,
+    });
 
-      const atividade =
-  await Atividade.findOne({
-    where: {
-      id,
-    },
-    transaction,
-    lock: transaction.LOCK.UPDATE,
+    if (!atividade) {
+      throw criarErro('Atividade não encontrada.', 404);
+    }
+
+    validarCriador(atividade, usuarioId);
+
+    imagemAnterior = atividade.imagemUrl;
+
+    // Excluir interesses associados
+    await InteresseAtividade.destroy({
+      where: { atividadeId: id },
+      transaction,
+    });
+
+    // Excluir favoritos associados
+    await FavoritoAtividade.destroy({
+      where: { atividadeId: id },
+      transaction,
+    });
+
+    // Excluir atividade
+    await atividade.destroy({ transaction });
+
+    return {
+      mensagem: 'Atividade excluída com sucesso.',
+    };
   });
 
-      if (!atividade) {
-        throw criarErro(
-          'Atividade não encontrada.',
-          404
-        );
-      }
+  // Remover imagem após confirmar a exclusão
+  try {
+    await removerArquivo(imagemAnterior, id);
+  } catch (erro) {
+    console.error('Erro ao remover imagem da atividade:', erro.message);
+  }
 
-      validarCriador(
-        atividade,
-        usuarioId
-      );
-
-      // Excluir os interesses associados
-
-      await InteresseAtividade.destroy({
-        where: {
-          atividadeId: id,
-        },
-        transaction,
-      });
-
-      // Excluir os favoritos associados
-
-      await FavoritoAtividade.destroy({
-        where: {
-          atividadeId: id,
-        },
-        transaction,
-      });
-
-      // Excluir definitivamente a atividade
-
-      await atividade.destroy({
-        transaction,
-      });
-
-      return {
-        mensagem:
-          'Atividade excluída com sucesso.',
-      };
-    }
-  );
+  return resultado;
 }
+
 
 
 module.exports = {
