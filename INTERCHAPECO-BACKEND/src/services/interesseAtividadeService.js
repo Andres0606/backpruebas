@@ -10,6 +10,8 @@ const {
 // FUNÇÕES AUXILIARES
 // ============================================================
 
+const { atividadeVencida } = require('../utils/datas');
+
 function criarErro(mensagem, status = 400) {
   const erro = new Error(mensagem);
   erro.status = status;
@@ -117,45 +119,45 @@ async function verificarInteresse(
 // ADICIONAR INTERESSE
 // ============================================================
 
-async function adicionarInteresse(
-  usuarioId,
-  atividadeId
-) {
-  return Atividade.sequelize.transaction(
-    async (transaction) => {
 
-      await verificarAtividade(
+async function adicionarInteresse(usuarioId, atividadeId) {
+  return Atividade.sequelize.transaction(async (transaction) => {
+    const atividade = await verificarAtividade(
+      atividadeId,
+      transaction
+    );
+
+    if (atividadeVencida(
+      atividade.dataAtividade,
+      atividade.horaInicio
+    )) {
+      throw criarErro(
+        'Esta atividade já passou do horário de início.',
+        409
+      );
+    }
+
+    const [, criado] = await InteresseAtividade.findOrCreate({
+      where: { usuarioId, atividadeId },
+      transaction,
+    });
+
+    return {
+      mensagem: criado
+        ? 'Interesse registrado com sucesso.'
+        : 'Você já demonstrou interesse nesta atividade.',
+
+      atividadeId,
+      interessado: true,
+
+      interessados: await contarInteressados(
         atividadeId,
         transaction
-      );
-
-      const [, criado] =
-        await InteresseAtividade.findOrCreate({
-          where: {
-            usuarioId,
-            atividadeId,
-          },
-          transaction,
-        });
-
-      return {
-        mensagem: criado
-          ? 'Interesse registrado com sucesso.'
-          : 'Você já demonstrou interesse nesta atividade.',
-
-        atividadeId,
-
-        interessado: true,
-
-        interessados:
-          await contarInteressados(
-            atividadeId,
-            transaction
-          ),
-      };
-    }
-  );
+      ),
+    };
+  });
 }
+
 
 // ============================================================
 // REMOVER INTERESSE

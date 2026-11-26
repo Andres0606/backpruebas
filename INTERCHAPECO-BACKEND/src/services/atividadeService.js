@@ -1,4 +1,3 @@
-
 // SERVICE — Gerenciamento de atividades
 
 const {
@@ -8,6 +7,13 @@ const {
   InteresseAtividade,
   FavoritoAtividade,
 } = require('../models');
+
+const { Op } = require('sequelize');
+
+const {
+  agoraChapeco,
+  atividadeVencida,
+} = require('../utils/datas');
 
 const { removerArquivo } = require('./fotoAtividadeService');
 // ============================================================
@@ -41,8 +47,6 @@ const incluirRelacionamentos = [
     ],
   },
 ];
-
-
 
 // ============================================================
 // FORMATAR ATIVIDADE
@@ -98,12 +102,12 @@ async function formatarAtividade(
 
     guardado: !!favorito,
 
+    vencida: atividadeVencida(dados.dataAtividade, dados.horaInicio),
+
     minhaAtividade:
       dados.criadorId === usuarioId,
   };
 }
-
-
 
 // ============================================================
 // LISTAR ATIVIDADES
@@ -124,8 +128,17 @@ async function listarAtividades(
     throw criarErro('Ordenação inválida.');
   }
 
+  const agora = agoraChapeco();
+
   const where = {
     ativo: true,
+    [Op.or]: [
+      { dataAtividade: { [Op.gt]: agora.data } },
+      {
+        dataAtividade: agora.data,
+        horaInicio: { [Op.gt]: agora.hora },
+      },
+    ],
   };
 
   if (categoriaId !== undefined) {
@@ -455,6 +468,10 @@ async function criarAtividade(
     true
   );
 
+  if (atividadeVencida(valores.dataAtividade, valores.horaInicio)) {
+    throw criarErro('A data e o horário da atividade devem estar no futuro.');
+  }
+
   validarCoordenadas(
     valores.latitude,
     valores.longitude
@@ -493,6 +510,17 @@ async function atualizarAtividade(
   const valores =
     await validarDados(dados);
 
+  const dataAtividade = valores.dataAtividade ?? atividade.dataAtividade;
+  const horaInicio = valores.horaInicio ?? atividade.horaInicio;
+
+  const alterouHorario =
+    dataAtividade !== atividade.dataAtividade ||
+    horaInicio !== atividade.horaInicio;
+
+  if (alterouHorario && atividadeVencida(dataAtividade, horaInicio)) {
+    throw criarErro('A data e o horário da atividade devem estar no futuro.');
+  }
+
   if (Object.keys(valores).length === 0) {
     throw criarErro(
       'Nenhum campo válido informado.'
@@ -525,8 +553,6 @@ async function atualizarAtividade(
 // ============================================================
 // EXCLUIR ATIVIDADE
 // ============================================================
-
-
 
 async function excluirAtividade(id, usuarioId) {
   const sequelize = Atividade.sequelize;
@@ -580,8 +606,6 @@ async function excluirAtividade(id, usuarioId) {
 
   return resultado;
 }
-
-
 
 module.exports = {
   listarAtividades,
