@@ -10,6 +10,10 @@ const CategoriaAtividade = require('./CategoriaAtividade');
 const Atividade = require('./Atividade');
 const InteresseAtividade = require('./InteresseAtividade');
 const FavoritoAtividade = require('./FavoritoAtividade');
+const CategoriaConselho = require('./CategoriaConselho');
+const Conselho = require('./Conselho');
+const CurtidaConselho = require('./CurtidaConselho');
+const ComentarioConselho = require('./ComentarioConselho');
 // ============================================================
 // PAÍS - UNIVERSIDADE
 // ============================================================
@@ -226,6 +230,78 @@ FavoritoAtividade.belongsTo(Atividade, {
 });
 
 
+// USUÁRIO - CONSELHOS
+
+Usuario.hasMany(Conselho, {
+  foreignKey: 'usuarioId',
+  as: 'conselhos',
+});
+
+Conselho.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'autor',
+});
+
+// CATEGORIA - CONSELHOS
+
+CategoriaConselho.hasMany(Conselho, {
+  foreignKey: 'categoriaId',
+  as: 'conselhos',
+});
+
+Conselho.belongsTo(CategoriaConselho, {
+  foreignKey: 'categoriaId',
+  as: 'categoria',
+});
+
+// USUÁRIO - CURTIDAS
+
+Usuario.hasMany(CurtidaConselho, {
+  foreignKey: 'usuarioId',
+  as: 'curtidasConselhos',
+});
+
+CurtidaConselho.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'usuario',
+});
+
+// CONSELHO - CURTIDAS
+
+Conselho.hasMany(CurtidaConselho, {
+  foreignKey: 'conselhoId',
+  as: 'curtidas',
+});
+
+CurtidaConselho.belongsTo(Conselho, {
+  foreignKey: 'conselhoId',
+  as: 'conselho',
+});
+
+// USUÁRIO - COMENTÁRIOS
+
+Usuario.hasMany(ComentarioConselho, {
+  foreignKey: 'usuarioId',
+  as: 'comentariosConselhos',
+});
+
+ComentarioConselho.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'autor',
+});
+
+// CONSELHO - COMENTÁRIOS
+
+Conselho.hasMany(ComentarioConselho, {
+  foreignKey: 'conselhoId',
+  as: 'comentarios',
+});
+
+ComentarioConselho.belongsTo(Conselho, {
+  foreignKey: 'conselhoId',
+  as: 'conselho',
+});
+
 module.exports = {
   Rol,
   Pais,
@@ -239,4 +315,8 @@ module.exports = {
   Atividade,
   InteresseAtividade,
   FavoritoAtividade,
+  CategoriaConselho,
+  Conselho,
+  CurtidaConselho,
+  ComentarioConselho,
 };
