@@ -17,7 +17,10 @@ const ComentarioConselho = require('./ComentarioConselho');
 const EtapaIntercambio = require('./EtapaIntercambio');
 const EstadoTarefa = require('./EstadoTarefa');
 const PrioridadeTarefa = require('./PrioridadeTarefa');
-const Tarefa = require('./Tarefa'); 
+const Tarefa = require('./Tarefa');
+const CategoriaGasto = require('./CategoriaGasto');
+const Gasto = require('./Gasto');
+const OrcamentoMensal = require('./OrcamentoMensal');
 // ============================================================
 // PAÍS - UNIVERSIDADE
 // ============================================================
@@ -355,6 +358,45 @@ Tarefa.belongsTo(PrioridadeTarefa, {
   as: 'prioridade',
 });
 
+// USUÁRIO - GASTOS
+
+Usuario.hasMany(Gasto, {
+  foreignKey: 'usuarioId',
+  as: 'gastos',
+  onDelete: 'CASCADE',
+});
+
+Gasto.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'usuario',
+});
+
+// CATEGORIA - GASTOS
+
+CategoriaGasto.hasMany(Gasto, {
+  foreignKey: 'categoriaId',
+  as: 'gastos',
+  onDelete: 'SET NULL',
+});
+
+Gasto.belongsTo(CategoriaGasto, {
+  foreignKey: 'categoriaId',
+  as: 'categoria',
+});
+
+// USUÁRIO - ORÇAMENTOS
+
+Usuario.hasMany(OrcamentoMensal, {
+  foreignKey: 'usuarioId',
+  as: 'orcamentos',
+  onDelete: 'CASCADE',
+});
+
+OrcamentoMensal.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'usuario',
+});
+
 module.exports = {
   Rol,
   Pais,
@@ -376,4 +418,7 @@ module.exports = {
   EstadoTarefa,
   PrioridadeTarefa,
   Tarefa,
+  CategoriaGasto,
+  Gasto,
+  OrcamentoMensal,
 };

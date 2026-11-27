@@ -46,7 +46,10 @@ const categoriaConselhoRoutes =
 const conselhoRoutes =
   require('./routes/conselhoRoutes');
 
+const gastoRoutes = require('./routes/gastoRoutes');
+
 const app = express();
+
 
 app.use(cors());
 app.use(express.json());
@@ -132,6 +135,12 @@ app.use(
 );
 
 app.use('/conselhos', conselhoRoutes);
+
+app.use('/conselhos', conselhoRoutes);
+app.use('/tarefas', tarefaRoutes);
+app.use('/gastos', gastoRoutes);
+
+module.exports = app;
 
 module.exports = app;
 
