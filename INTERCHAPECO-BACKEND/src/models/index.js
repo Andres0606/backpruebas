@@ -21,6 +21,9 @@ const Tarefa = require('./Tarefa');
 const CategoriaGasto = require('./CategoriaGasto');
 const Gasto = require('./Gasto');
 const OrcamentoMensal = require('./OrcamentoMensal');
+const CategoriaFrase = require('./CategoriaFrase');
+const Frase = require('./Frase');
+const FavoritoFrase = require('./FavoritoFrase');
 // ============================================================
 // PAÍS - UNIVERSIDADE
 // ============================================================
@@ -397,6 +400,45 @@ OrcamentoMensal.belongsTo(Usuario, {
   as: 'usuario',
 });
 
+// CATEGORIA - FRASES
+
+CategoriaFrase.hasMany(Frase, {
+  foreignKey: 'categoriaId',
+  as: 'frases',
+  onDelete: 'SET NULL',
+});
+
+Frase.belongsTo(CategoriaFrase, {
+  foreignKey: 'categoriaId',
+  as: 'categoria',
+});
+
+// USUÁRIO - FRASES FAVORITAS
+
+Usuario.hasMany(FavoritoFrase, {
+  foreignKey: 'usuarioId',
+  as: 'favoritosFrases',
+  onDelete: 'CASCADE',
+});
+
+FavoritoFrase.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'usuario',
+});
+
+// FRASE - FAVORITOS
+
+Frase.hasMany(FavoritoFrase, {
+  foreignKey: 'fraseId',
+  as: 'favoritos',
+  onDelete: 'CASCADE',
+});
+
+FavoritoFrase.belongsTo(Frase, {
+  foreignKey: 'fraseId',
+  as: 'frase',
+});
+
 module.exports = {
   Rol,
   Pais,
@@ -421,4 +463,7 @@ module.exports = {
   CategoriaGasto,
   Gasto,
   OrcamentoMensal,
+  CategoriaFrase,
+  Frase,
+  FavoritoFrase,
 };

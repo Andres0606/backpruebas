@@ -1,6 +1,7 @@
 // ROUTES — Administração
 
 const express = require('express');
+const fraseController = require('../controllers/fraseController');
 
 const {
   autenticar,
@@ -51,6 +52,14 @@ router.get('/acesso', (req, res) => {
     },
   });
 });
+
+// GERENCIAMENTO DE FRASES
+
+router.get('/frases', fraseController.listarAdmin);
+router.get('/frases/:id', fraseController.obterAdmin);
+router.post('/frases', fraseController.criar);
+router.put('/frases/:id', fraseController.atualizar);
+router.delete('/frases/:id', fraseController.desativar);
 
 // ============================================================
 // GERENCIAMENTO DE LUGARES
