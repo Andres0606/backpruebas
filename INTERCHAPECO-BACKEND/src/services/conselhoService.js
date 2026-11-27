@@ -71,11 +71,15 @@ async function listarConselhos(
   usuarioId,
   { ordenacao = 'recentes', categoriaId } = {}
 ) {
-  if (!['recentes', 'populares'].includes(ordenacao)) {
-    throw criarErro('Ordenação inválida.');
-  }
+  if (!['recentes', 'populares', 'meus'].includes(ordenacao)) {
+  throw criarErro('Ordenação inválida.');
+}
 
-  const where = { ativo: true };
+const where = { ativo: true };
+
+if (ordenacao === 'meus') {
+  where.usuarioId = usuarioId;
+}
 
   if (categoriaId !== undefined) {
     if (!uuidValido(categoriaId)) {
