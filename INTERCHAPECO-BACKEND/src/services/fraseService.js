@@ -1,4 +1,3 @@
-
 // SERVICE — Frases em português
 
 const { QueryTypes } = require('sequelize');
@@ -84,13 +83,20 @@ async function listarFrases({
 
   if (!termo) return frases;
 
+  // Busca em português, espanhol e inglês
+
   return frases.filter(frase =>
     normalizarTexto(frase.frasePortugues).includes(termo) ||
     normalizarTexto(frase.traducaoEspanhol).includes(termo) ||
+    normalizarTexto(frase.traducaoIngles).includes(termo) ||
     normalizarTexto(frase.explicacao).includes(termo) ||
+    normalizarTexto(frase.explicacaoIngles).includes(termo) ||
+    normalizarTexto(frase.explicacaoPortugues).includes(termo) ||
     normalizarTexto(frase.categoria?.nome).includes(termo)
   );
 }
+
+// Consulta individual de frase
 
 async function obterFrase(id, incluirInativas = false) {
   validarId(id);
@@ -104,7 +110,9 @@ async function obterFrase(id, incluirInativas = false) {
     include: relacionamentos,
   });
 
-  if (!frase) throw criarErro('Frase não encontrada.', 404);
+  if (!frase) {
+    throw criarErro('Frase não encontrada.', 404);
+  }
 
   return frase;
 }
@@ -127,9 +135,13 @@ async function validarDados(dados, criacao = false) {
 
   const resultado = {};
 
+  // Categoria
+
   if (criacao || dados.categoriaId !== undefined) {
     resultado.categoriaId = await validarCategoria(dados.categoriaId);
   }
+
+  // Frase original em português
 
   if (criacao || dados.frasePortugues !== undefined) {
     resultado.frasePortugues = validarTexto(
@@ -138,6 +150,8 @@ async function validarDados(dados, criacao = false) {
     );
   }
 
+  // Tradução em espanhol
+
   if (criacao || dados.traducaoEspanhol !== undefined) {
     resultado.traducaoEspanhol = validarTexto(
       dados.traducaoEspanhol, 300,
@@ -145,12 +159,43 @@ async function validarDados(dados, criacao = false) {
     );
   }
 
+  // Tradução em inglês
+
+  if (criacao || dados.traducaoIngles !== undefined) {
+    resultado.traducaoIngles = validarTexto(
+      dados.traducaoIngles, 300,
+      'Informe uma tradução em inglês de até 300 caracteres.'
+    );
+  }
+
+  // Contexto de uso em espanhol
+
   if (criacao || dados.explicacao !== undefined) {
     resultado.explicacao = validarTexto(
       dados.explicacao, 3000,
-      'Informe uma explicação de até 3000 caracteres.'
+      'Informe uma explicação em espanhol de até 3000 caracteres.'
     );
   }
+
+  // Contexto de uso em inglês
+
+  if (criacao || dados.explicacaoIngles !== undefined) {
+    resultado.explicacaoIngles = validarTexto(
+      dados.explicacaoIngles, 3000,
+      'Informe uma explicação em inglês de até 3000 caracteres.'
+    );
+  }
+
+  // Contexto de uso em português
+
+  if (criacao || dados.explicacaoPortugues !== undefined) {
+    resultado.explicacaoPortugues = validarTexto(
+      dados.explicacaoPortugues, 3000,
+      'Informe uma explicação em português de até 3000 caracteres.'
+    );
+  }
+
+  // Estado da frase
 
   if (dados.ativo !== undefined) {
     if (typeof dados.ativo !== 'boolean') {
@@ -171,6 +216,7 @@ async function validarDados(dados, criacao = false) {
 
 async function criarFrase(dados) {
   const valores = await validarDados(dados, true);
+
   const frase = await Frase.create(valores);
 
   return obterFrase(frase.id, true);
@@ -178,11 +224,12 @@ async function criarFrase(dados) {
 
 async function atualizarFrase(id, dados) {
   const frase = await obterFrase(id, true);
+
   const valores = await validarDados(dados);
 
   await frase.update(valores);
 
-  return obterFrase(id, true);
+  return obterFrase(frase.id, true);
 }
 
 async function desativarFrase(id) {
@@ -190,7 +237,9 @@ async function desativarFrase(id) {
 
   await frase.update({ ativo: false });
 
-  return { mensagem: 'Frase desativada com sucesso.' };
+  return {
+    mensagem: 'Frase desativada com sucesso.',
+  };
 }
 
 module.exports = {

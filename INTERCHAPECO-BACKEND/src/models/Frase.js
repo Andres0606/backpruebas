@@ -24,9 +24,24 @@ const Frase = sequelize.define('Frase', {
     allowNull: false,
     field: 'traducao_espanhol',
   },
+  traducaoIngles: {
+    type: DataTypes.STRING(300),
+    allowNull: true,
+    field: 'traducao_ingles',
+  },
   explicacao: {
     type: DataTypes.TEXT,
     allowNull: true,
+  },
+  explicacaoIngles: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'explicacao_ingles',
+  },
+  explicacaoPortugues: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'explicacao_portugues',
   },
   audioUrl: {
     type: DataTypes.TEXT,
