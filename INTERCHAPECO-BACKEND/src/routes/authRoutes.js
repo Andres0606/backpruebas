@@ -32,23 +32,25 @@ const {
   limitarRedefinicoes,
 } = require('../middlewares/recuperacaoSenhaMiddleware');
 
+const {
+  limitarTentativasLogin,
+} = require('../middlewares/loginMiddleware');
+
 const router = express.Router();
 
-// ============================================================
 // LOGIN
-// ============================================================
 
-router.post('/login', login);
+router.post(
+  '/login',
+  limitarTentativasLogin,
+  login
+);
 
-// ============================================================
 // CADASTRO
-// ============================================================
 
 router.post('/cadastro', cadastro);
 
-// ============================================================
 // SOLICITAR RECUPERAÇÃO DE SENHA
-// ============================================================
 
 router.post(
   '/recuperar-senha',
@@ -56,9 +58,7 @@ router.post(
   solicitar
 );
 
-// ============================================================
 // REDEFINIR SENHA
-// ============================================================
 
 router.post(
   '/redefinir-senha',
@@ -66,9 +66,7 @@ router.post(
   redefinir
 );
 
-// ============================================================
 // USUÁRIO AUTENTICADO
-// ============================================================
 
 router.get(
   '/me',
@@ -76,9 +74,7 @@ router.get(
   obterUsuarioAutenticado
 );
 
-// ============================================================
 // ATUALIZAR PERFIL
-// ============================================================
 
 router.put(
   '/me',
@@ -86,9 +82,7 @@ router.put(
   editarPerfil
 );
 
-// ============================================================
 // ATUALIZAR FOTO
-// ============================================================
 
 router.put(
   '/me/foto',
@@ -97,9 +91,7 @@ router.put(
   atualizarFotoPerfil
 );
 
-// ============================================================
 // REMOVER FOTO
-// ============================================================
 
 router.delete(
   '/me/foto',
