@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const tarefaRoutes = require('./routes/tarefaRoutes');
 
 const rolRoutes =
   require('./routes/rolRoutes');
@@ -133,3 +134,5 @@ app.use(
 app.use('/conselhos', conselhoRoutes);
 
 module.exports = app;
+
+app.use('/tarefas', tarefaRoutes);

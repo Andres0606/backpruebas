@@ -14,6 +14,10 @@ const CategoriaConselho = require('./CategoriaConselho');
 const Conselho = require('./Conselho');
 const CurtidaConselho = require('./CurtidaConselho');
 const ComentarioConselho = require('./ComentarioConselho');
+const EtapaIntercambio = require('./EtapaIntercambio');
+const EstadoTarefa = require('./EstadoTarefa');
+const PrioridadeTarefa = require('./PrioridadeTarefa');
+const Tarefa = require('./Tarefa'); 
 // ============================================================
 // PAÍS - UNIVERSIDADE
 // ============================================================
@@ -302,6 +306,55 @@ ComentarioConselho.belongsTo(Conselho, {
   as: 'conselho',
 });
 
+
+// USUÁRIO - TAREFAS
+
+Usuario.hasMany(Tarefa, {
+  foreignKey: 'usuarioId',
+  as: 'tarefas',
+});
+
+Tarefa.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'usuario',
+});
+
+// ETAPA - TAREFAS
+
+EtapaIntercambio.hasMany(Tarefa, {
+  foreignKey: 'etapaId',
+  as: 'tarefas',
+});
+
+Tarefa.belongsTo(EtapaIntercambio, {
+  foreignKey: 'etapaId',
+  as: 'etapa',
+});
+
+// ESTADO - TAREFAS
+
+EstadoTarefa.hasMany(Tarefa, {
+  foreignKey: 'estadoId',
+  as: 'tarefas',
+});
+
+Tarefa.belongsTo(EstadoTarefa, {
+  foreignKey: 'estadoId',
+  as: 'estado',
+});
+
+// PRIORIDADE - TAREFAS
+
+PrioridadeTarefa.hasMany(Tarefa, {
+  foreignKey: 'prioridadeId',
+  as: 'tarefas',
+});
+
+Tarefa.belongsTo(PrioridadeTarefa, {
+  foreignKey: 'prioridadeId',
+  as: 'prioridade',
+});
+
 module.exports = {
   Rol,
   Pais,
@@ -319,4 +372,8 @@ module.exports = {
   Conselho,
   CurtidaConselho,
   ComentarioConselho,
+  EtapaIntercambio,
+  EstadoTarefa,
+  PrioridadeTarefa,
+  Tarefa,
 };
