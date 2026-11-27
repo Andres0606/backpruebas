@@ -131,7 +131,7 @@ async function enviarFoto(usuarioId, arquivo) {
     });
 
   if (error) {
-    console.error('Erro no upload:', error.message);
+    console.error('Erro no upload:', error.name);
 
     throw criarErro(
       'Não foi possível enviar a foto.',
@@ -157,7 +157,7 @@ async function enviarFoto(usuarioId, arquivo) {
     if (erroRemocao) {
       console.error(
         'Erro ao limpar arquivo:',
-        erroRemocao.message
+        erroRemocao.name
       );
     }
 
@@ -171,7 +171,7 @@ async function enviarFoto(usuarioId, arquivo) {
   } catch (erro) {
     console.error(
       'Erro ao remover foto anterior:',
-      erro.message
+      erro.name
     );
   }
 
@@ -198,7 +198,7 @@ async function excluirFoto(usuarioId) {
   } catch (erro) {
     console.error(
       'Erro ao remover arquivo:',
-      erro.message
+      erro.name
     );
   }
 

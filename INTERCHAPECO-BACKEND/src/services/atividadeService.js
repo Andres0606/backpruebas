@@ -594,7 +594,7 @@ async function excluirAtividade(id, usuarioId) {
   try {
     await removerArquivo(imagemAnterior, id);
   } catch (erro) {
-    console.error('Erro ao remover imagem da atividade:', erro.message);
+    console.error('Erro ao remover imagem da atividade:', erro.name);
   }
 
   return resultado;

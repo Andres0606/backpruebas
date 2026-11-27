@@ -9,7 +9,7 @@ async function listarRoles(req, res) {
 
     return res.status(200).json(roles);
   } catch (erro) {
-    console.error('Erro ao buscar roles:', erro);
+    console.error('Erro ao buscar roles:', erro.name);
 
     return res.status(500).json({
       mensagem: 'Erro ao buscar roles.',
@@ -32,7 +32,7 @@ async function obterRol(req, res) {
 
     return res.status(200).json(rol);
   } catch (erro) {
-    console.error('Erro ao buscar rol:', erro);
+    console.error('Erro ao buscar rol:', erro.name);
 
     return res.status(500).json({
       mensagem: 'Erro ao buscar rol.',
@@ -57,7 +57,7 @@ async function criarRol(req, res) {
 
     return res.status(201).json(novoRol);
   } catch (erro) {
-    console.error('Erro ao criar rol:', erro);
+    console.error('Erro ao criar rol:', erro.name);
 
     return res.status(500).json({
       mensagem: 'Erro ao criar rol.',
@@ -91,7 +91,7 @@ async function atualizarRol(req, res) {
 
     return res.status(200).json(rol);
   } catch (erro) {
-    console.error('Erro ao atualizar rol:', erro);
+    console.error('Erro ao atualizar rol:', erro.name);
 
     return res.status(500).json({
       mensagem: 'Erro ao atualizar rol.',
@@ -118,7 +118,7 @@ async function excluirRol(req, res) {
       mensagem: 'Rol excluído com sucesso.',
     });
   } catch (erro) {
-    console.error('Erro ao excluir rol:', erro);
+    console.error('Erro ao excluir rol:', erro.name);
 
     return res.status(500).json({
       mensagem: 'Erro ao excluir rol.',

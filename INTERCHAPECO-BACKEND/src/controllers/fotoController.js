@@ -21,7 +21,7 @@ async function atualizarFotoPerfil(req, res) {
   } catch (erro) {
     console.error(
       'Erro ao atualizar foto:',
-      erro
+      erro.name
     );
 
     return res.status(erro.status || 500).json({
@@ -50,7 +50,7 @@ async function removerFotoPerfil(req, res) {
   } catch (erro) {
     console.error(
       'Erro ao remover foto:',
-      erro
+      erro.name
     );
 
     return res.status(erro.status || 500).json({

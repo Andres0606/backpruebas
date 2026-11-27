@@ -22,7 +22,7 @@ async function login(req, res) {
   } catch (erro) {
     console.error(
       'Erro ao realizar login:',
-      erro
+      erro.name
     );
 
     return res
@@ -55,7 +55,7 @@ async function cadastro(req, res) {
   } catch (erro) {
     console.error(
       'Erro ao cadastrar usuário:',
-      erro
+      erro.name
     );
 
     return res
@@ -91,7 +91,7 @@ async function obterUsuarioAutenticado(
   } catch (erro) {
     console.error(
       'Erro ao buscar usuário autenticado:',
-      erro
+      erro.name
     );
 
     return res
@@ -128,7 +128,7 @@ async function editarPerfil(
   } catch (erro) {
     console.error(
       'Erro ao atualizar perfil:',
-      erro
+      erro.name
     );
 
     return res

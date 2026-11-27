@@ -84,7 +84,7 @@ async function enviarFotoAtividade(atividadeId, usuarioId, arquivo) {
     });
 
   if (error) {
-    console.error('Erro no upload:', error.message);
+    console.error('Erro no upload:', error.name);
     throw criarErro('Não foi possível enviar a imagem.', 500);
   }
 
@@ -116,7 +116,7 @@ async function enviarFotoAtividade(atividadeId, usuarioId, arquivo) {
       .remove([caminho]);
 
     if (erroRemocao) {
-      console.error('Erro ao limpar arquivo:', erroRemocao.message);
+      console.error('Erro ao limpar arquivo:', erroRemocao.name);
     }
 
     throw erro;
@@ -126,7 +126,7 @@ async function enviarFotoAtividade(atividadeId, usuarioId, arquivo) {
   try {
     await removerArquivo(imagemAnterior, atividadeId);
   } catch (erro) {
-    console.error('Erro ao remover imagem anterior:', erro.message);
+    console.error('Erro ao remover imagem anterior:', erro.name);
   }
 
   return { atividadeId, imagemUrl };
@@ -157,7 +157,7 @@ async function excluirFotoAtividade(atividadeId, usuarioId) {
   try {
     await removerArquivo(imagemAnterior, atividadeId);
   } catch (erro) {
-    console.error('Erro ao remover imagem:', erro.message);
+    console.error('Erro ao remover imagem:', erro.name);
   }
 
   return {

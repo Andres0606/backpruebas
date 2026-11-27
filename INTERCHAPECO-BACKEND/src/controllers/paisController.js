@@ -24,7 +24,7 @@ async function listarPaises(req, res) {
   } catch (erro) {
     console.error(
       'Erro ao listar países:',
-      erro
+      erro.name
     );
 
     return res.status(500).json({

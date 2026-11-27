@@ -244,7 +244,7 @@ async function excluirConselho(id, usuarioId) {
   try {
     await removerArquivo(imagemAnterior, id);
   } catch (erro) {
-    console.error('Erro ao remover imagem do conselho:', erro.message);
+    console.error('Erro ao remover imagem do conselho:', erro.name);
   }
 
   return resultado;

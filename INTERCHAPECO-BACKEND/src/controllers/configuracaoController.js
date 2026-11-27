@@ -20,7 +20,7 @@ async function consultarConfiguracoes(req, res) {
   } catch (erro) {
     console.error(
       'Erro ao consultar configurações:',
-      erro
+      erro.name
     );
 
     return res.status(erro.status || 500).json({
@@ -52,7 +52,7 @@ async function editarConfiguracoes(req, res) {
   } catch (erro) {
     console.error(
       'Erro ao atualizar configurações:',
-      erro
+      erro.name
     );
 
     return res.status(erro.status || 500).json({

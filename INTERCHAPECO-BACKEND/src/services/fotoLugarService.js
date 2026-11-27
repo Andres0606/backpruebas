@@ -114,7 +114,7 @@ async function enviarFotoLugar(lugarId, arquivo) {
   if (error) {
     console.error(
       'Erro no upload da imagem:',
-      error.message
+      error.name
     );
 
     throw criarErro(
@@ -161,7 +161,7 @@ async function enviarFotoLugar(lugarId, arquivo) {
     if (erroRemocao) {
       console.error(
         'Erro ao limpar arquivo:',
-        erroRemocao.message
+        erroRemocao.name
       );
     }
 
@@ -178,7 +178,7 @@ async function enviarFotoLugar(lugarId, arquivo) {
   } catch (erro) {
     console.error(
       'Erro ao remover imagem anterior:',
-      erro.message
+      erro.name
     );
   }
 
@@ -222,7 +222,7 @@ async function excluirFotoLugar(lugarId) {
   } catch (erro) {
     console.error(
       'Erro ao remover imagem:',
-      erro.message
+      erro.name
     );
   }
 

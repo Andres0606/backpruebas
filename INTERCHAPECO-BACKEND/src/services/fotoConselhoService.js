@@ -82,7 +82,7 @@ async function enviarFotoConselho(conselhoId, usuarioId, arquivo) {
     });
 
   if (error) {
-    console.error('Erro no upload:', error.message);
+    console.error('Erro no upload:', error.name);
     throw criarErro('Não foi possível enviar a imagem.', 500);
   }
 
@@ -107,7 +107,7 @@ async function enviarFotoConselho(conselhoId, usuarioId, arquivo) {
     try {
       await removerArquivo(imagemUrl, conselhoId);
     } catch (erroRemocao) {
-      console.error('Erro ao limpar arquivo:', erroRemocao.message);
+      console.error('Erro ao limpar arquivo:', erroRemocao.name);
     }
 
     throw erro;
@@ -116,7 +116,7 @@ async function enviarFotoConselho(conselhoId, usuarioId, arquivo) {
   try {
     await removerArquivo(imagemAnterior, conselhoId);
   } catch (erro) {
-    console.error('Erro ao remover imagem anterior:', erro.message);
+    console.error('Erro ao remover imagem anterior:', erro.name);
   }
 
   return { conselhoId, imagemUrl };
@@ -143,7 +143,7 @@ async function excluirFotoConselho(conselhoId, usuarioId) {
   try {
     await removerArquivo(imagemAnterior, conselhoId);
   } catch (erro) {
-    console.error('Erro ao remover imagem:', erro.message);
+    console.error('Erro ao remover imagem:', erro.name);
   }
 
   return { conselhoId, imagemUrl: null };

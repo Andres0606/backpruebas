@@ -64,7 +64,7 @@ async function listarUniversidades(
   } catch (erro) {
     console.error(
       'Erro ao listar universidades:',
-      erro
+      erro.name
     );
 
     return res.status(500).json({
