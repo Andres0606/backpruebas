@@ -1,0 +1,12 @@
+BEGIN;
+
+ALTER TABLE public.categorias_frase
+ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE public.frases
+ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE public.favoritos_frases
+ENABLE ROW LEVEL SECURITY;
+
+COMMIT;
