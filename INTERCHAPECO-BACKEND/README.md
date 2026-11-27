@@ -113,7 +113,8 @@ INTERCHAPECO-BACKEND/
 │       ├── 001_frases_iniciais.sql
 │       ├── 002_orcamentos_mensais.sql
 │       ├── 003_seguranca_frases.sql
-│       └── 004_seguranca_geral.sql
+│       ├── 004_seguranca_geral.sql
+│       └── 004_traducoes_frases.sql
 │
 ├── src/
 │   ├── config/
@@ -177,6 +178,11 @@ e autorização específica.
 Responsável pelo cadastro, login, recuperação de senha,
 consulta e atualização dos dados pessoais.
 
+O cadastro aceita a preferência inicial de idioma (`idioma`).
+São aceitos `pt-BR`, `es` e `en`. Quando o campo é omitido,
+o idioma padrão é `pt-BR`. Valores inválidos são rejeitados
+com resposta HTTP 400. A preferência é persistida na conta.
+
 As senhas são armazenadas utilizando bcrypt, com fator
 de custo 10.
 
@@ -210,6 +216,12 @@ Cada lugar pode conter:
 
 O aplicativo utiliza as coordenadas fornecidas pela API
 para apresentar os lugares em mapas interativos.
+
+A localização atual do estudante, o cálculo de distâncias
+em linha reta pela fórmula de Haversine, a ordenação por
+proximidade e a centralização do mapa são tratados no frontend.
+As coordenadas atuais do dispositivo não são enviadas ao backend
+para essas operações.
 
 Os estudantes podem adicionar ou remover lugares
 de seus favoritos.
@@ -270,8 +282,8 @@ comuns da vida cotidiana.
 Cada frase contém:
 
 - Texto em português.
-- Tradução em espanhol.
-- Explicação ou contexto de utilização.
+- Traduções em espanhol e inglês.
+- Contextos de utilização em espanhol, inglês e português.
 - Categoria.
 
 O estudante pode consultar frases e adicioná-las
@@ -281,6 +293,10 @@ A reprodução da pronúncia é realizada pelo aplicativo
 móvel utilizando recursos de síntese de voz.
 
 O administrador pode cadastrar, editar e desativar frases.
+O cadastro de novas frases inclui os textos educativos nos
+idiomas disponíveis. A pesquisa considera as expressões,
+traduções e contextos armazenados. A seleção do texto exibido
+é realizada pelo frontend.
 
 ### 7.7. Conselhos úteis
 
@@ -344,19 +360,28 @@ preferências de outros estudantes.
 Permite consultar e atualizar as preferências do usuário,
 incluindo tema e idioma.
 
-O sistema possui gerenciamento de preferências de idioma.
+O sistema permite persistir e atualizar a preferência de idioma
+da conta por meio dos endpoints de configurações.
 
-Idiomas previstos para a interface:
+Idiomas suportados pela interface:
 
 - Português (pt-BR).
 - Espanhol (es).
 - Inglês (en).
 
-A tradução integral das interfaces encontra-se em etapa
-de finalização no frontend.
+O frontend utiliza dicionários e catálogos locais para traduzir
+as interfaces dos módulos principais, inclusive as telas de acesso
+e administração, e adaptar mensagens conhecidas, datas, valores
+monetários, países e categorias ao idioma selecionado.
+
+Antes do login, a preferência é mantida localmente no dispositivo.
+Após a autenticação, prevalece a preferência persistida na conta.
+O cadastro utiliza o idioma selecionado antes da autenticação.
+O último idioma da interface é preservado após o logout.
 
 O conteúdo das publicações dos estudantes não é traduzido
-automaticamente pelo backend.
+automaticamente pelo backend. A integração com serviços externos
+de tradução automática de publicações não foi implementada.
 
 ### 7.11. Administração
 
@@ -365,6 +390,9 @@ conteúdos e categorias.
 
 O painel apresenta informações resumidas do sistema
 e disponibiliza operações de gerenciamento e moderação.
+
+A gestão de frases inclui as traduções em espanhol e inglês
+e os contextos de utilização nos três idiomas.
 
 ## 8. Banco de dados
 
@@ -401,6 +429,24 @@ no arquivo `src/models/index.js`.
 - Uma atividade pode receber o interesse de vários usuários.
 - Usuários podem salvar vários lugares, frases e atividades.
 - As categorias organizam os registros dos respectivos módulos.
+
+### Campos multilíngues das frases
+
+A tabela `frases` mantém o conteúdo original em português, a
+tradução em espanhol e o contexto existente em espanhol. A
+migração `004_traducoes_frases.sql` adiciona os seguintes campos:
+
+| Coluna PostgreSQL | Atributo Sequelize | Tipo | Finalidade |
+|---|---|---|---|
+| `traducao_ingles` | `traducaoIngles` | VARCHAR(300) | Tradução em inglês |
+| `explicacao_ingles` | `explicacaoIngles` | TEXT | Contexto em inglês |
+| `explicacao_portugues` | `explicacaoPortugues` | TEXT | Contexto em português |
+
+A migração foi preparada para complementar as 71 frases
+existentes no banco de dados do projeto, preservando seus
+identificadores, textos originais e relações de favoritos.
+Os novos campos são adicionados sem exigir valores para
+todos os registros no momento da alteração da estrutura.
 
 ### Migrações
 
@@ -445,6 +491,13 @@ http://localhost:3000
 | 429 | Limite de solicitações excedido |
 | 500 | Erro interno do servidor |
 
+### Idioma das respostas
+
+A API mantém os contratos JSON e as mensagens do servidor.
+O frontend adapta as mensagens conhecidas ao idioma selecionado,
+sem alterar os códigos HTTP ou os identificadores dos registros.
+Não é necessário um serviço externo de tradução para essa operação.
+
 ### Autenticação das solicitações
 
 Os endpoints protegidos exigem o envio do token JWT
@@ -470,12 +523,19 @@ Content-Type: application/json
 | PUT | `/auth/me/foto` | Atualizar fotografia |
 | DELETE | `/auth/me/foto` | Remover fotografia |
 
+O endpoint `POST /auth/cadastro` aceita o campo opcional
+`idioma`, com os valores `pt-BR`, `es` ou `en`, além dos
+demais dados exigidos pelo cadastro.
+
 ### 10.2. Configurações
 
 | Método | Endpoint | Finalidade |
 |---|---|---|
 | GET | `/configuracoes/me` | Consultar preferências |
 | PUT | `/configuracoes/me` | Atualizar preferências |
+
+A atualização da preferência de idioma utiliza o campo `idioma`
+no corpo da solicitação autenticada.
 
 ### 10.3. Lugares
 
@@ -826,6 +886,20 @@ GET /auth/me
 Authorization: Bearer SEU_TOKEN_JWT
 ```
 
+### Atualizar o idioma da conta
+
+```http
+PUT /configuracoes/me
+Authorization: Bearer SEU_TOKEN_JWT
+Content-Type: application/json
+```
+
+```json
+{
+  "idioma": "es"
+}
+```
+
 ### Criar tarefa
 
 ```http
@@ -853,6 +927,10 @@ Durante o desenvolvimento foram realizadas verificações
 funcionais e de integração, incluindo:
 
 - Cadastro e autenticação.
+- Persistência do idioma selecionado durante o cadastro.
+- Consulta e atualização das preferências de idioma.
+- Consulta de traduções e contextos das frases.
+- Gerenciamento administrativo de frases multilíngues.
 - Recuperação de senha.
 - Expiração e invalidação de tokens.
 - Operações de CRUD.
