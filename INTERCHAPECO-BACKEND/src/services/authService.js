@@ -69,32 +69,32 @@ function formatarUsuario(usuario) {
 
     rol: usuario.rol
       ? {
-          id: usuario.rol.id,
-          nome: usuario.rol.nome,
-        }
+        id: usuario.rol.id,
+        nome: usuario.rol.nome,
+      }
       : null,
 
     paisOrigem: usuario.paisOrigem
       ? {
-          id: usuario.paisOrigem.id,
-          nome: usuario.paisOrigem.nome,
-        }
+        id: usuario.paisOrigem.id,
+        nome: usuario.paisOrigem.nome,
+      }
       : null,
 
     universidadeOrigem:
       usuario.universidadeOrigem
         ? {
-            id: usuario.universidadeOrigem.id,
-            nome: usuario.universidadeOrigem.nome,
-          }
+          id: usuario.universidadeOrigem.id,
+          nome: usuario.universidadeOrigem.nome,
+        }
         : null,
 
     universidadeDestino:
       usuario.universidadeDestino
         ? {
-            id: usuario.universidadeDestino.id,
-            nome: usuario.universidadeDestino.nome,
-          }
+          id: usuario.universidadeDestino.id,
+          nome: usuario.universidadeDestino.nome,
+        }
         : null,
   };
 }
@@ -181,7 +181,20 @@ async function cadastrarUsuario({
   universidadeDestinoId,
   email,
   senha,
+  idioma = 'pt-BR',
 }) {
+  const idiomasPermitidos = [
+    'pt-BR',
+    'es',
+    'en',
+  ];
+
+  if (!idiomasPermitidos.includes(idioma)) {
+    const erro = new Error('Idioma inválido.');
+
+    erro.status = 400;
+    throw erro;
+  }
   if (
     !nome ||
     !paisOrigemId ||
@@ -341,8 +354,7 @@ async function cadastrarUsuario({
       fotoUrl:
         null,
 
-      idioma:
-        'pt-BR',
+      idioma,
 
       tema:
         'claro',
