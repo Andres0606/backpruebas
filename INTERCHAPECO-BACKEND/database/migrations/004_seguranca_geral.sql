@@ -1,0 +1,22 @@
+-- Ativação da segurança RLS nas tabelas restantes
+
+BEGIN;
+
+ALTER TABLE public.atividades ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.categorias_atividade ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.categorias_conselho ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.comentarios_conselhos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.configuracoes_usuario ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.conselhos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.curtidas_conselhos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.estados_tarefa ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.favoritos_atividades ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.interesses_atividades ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.paises ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.prioridades_tarefa ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.roles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.tarefas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.universidades ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.usuarios ENABLE ROW LEVEL SECURITY;
+
+COMMIT;
